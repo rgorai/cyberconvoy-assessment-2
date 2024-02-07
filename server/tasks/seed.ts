@@ -1,24 +1,30 @@
 import mysql from 'mysql2'
-import { MYSQL_PASSWORD, NODE_ENV } from '../src/utils/env'
+import {
+  MYSQL_DATABASE,
+  MYSQL_HOST,
+  MYSQL_PASSWORD,
+  MYSQL_USER,
+  NODE_ENV,
+} from '../src/utils/env'
 import { departmentsList, employeesList } from './seedData'
 
 const db = mysql
   .createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: MYSQL_PASSWORD ?? '',
+    host: MYSQL_HOST,
+    user: MYSQL_USER,
+    password: MYSQL_PASSWORD,
   })
   .promise()
 
 const seedDb = async () => {
   // drop db before seeding
   console.log('Dropping db if it exists...')
-  await db.query('DROP DATABASE IF EXISTS cyberconvoy_assessment_2_ron_gorai')
+  await db.query(`DROP DATABASE IF EXISTS ${MYSQL_DATABASE}`)
 
   // create db
   console.log('Creating db...')
-  await db.query('CREATE DATABASE cyberconvoy_assessment_2_ron_gorai')
-  await db.query('USE cyberconvoy_assessment_2_ron_gorai')
+  await db.query(`CREATE DATABASE ${MYSQL_DATABASE}`)
+  await db.query(`USE ${MYSQL_DATABASE}`)
 
   // DEPARTMENTS
   console.log('Creating departments table...')
