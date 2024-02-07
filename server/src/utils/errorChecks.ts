@@ -6,7 +6,7 @@
  * @param strings object of values to test. Usage: { val1, val2, ... }
  * @return throws if string is invalid
  */
-export const areValidStrings = <T extends Record<string, string>>(
+export const areValidStrings = <T extends Record<string, any>>(
   strings: T,
   options?: {
     allowEmpty?: boolean
