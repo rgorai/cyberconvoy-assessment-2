@@ -46,4 +46,14 @@ oAuthRouter.get('/isAuthenticated', ensureAuthenticated, async (req, res) => {
   return res.status(200).json(req.session.user)
 })
 
+oAuthRouter.get('/logout', async (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err)
+    } else {
+      res.sendStatus(200)
+    }
+  })
+})
+
 export default oAuthRouter

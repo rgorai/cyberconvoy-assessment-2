@@ -10,7 +10,7 @@ type UserSessionInfo = {
 
 declare module 'express-session' {
   interface SessionData {
-    user?: UserSessionInfo,
+    user?: UserSessionInfo
     tokens?: Credentials
   }
 }
