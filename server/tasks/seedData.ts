@@ -52,5 +52,5 @@ export const employeesList: Omit<Employee, 'id'>[] = [
   },
 ].map((employee) => ({
   ...employee,
-  department_id: Math.random() * departmentsList.length + 1,
+  department_id: Math.floor(Math.random() * departmentsList.length) + 1,
 }))
