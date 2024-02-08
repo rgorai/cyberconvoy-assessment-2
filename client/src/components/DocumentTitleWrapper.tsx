@@ -6,7 +6,7 @@ type Props = {
 
 const DocumentTitleWrapper = (props: Props & PropsWithChildren) => {
   useEffect(() => {
-    document.title = props.pageTitle
+    document.title = `${props.pageTitle} | Employee Management App`
   }, [props])
 
   return props.children
