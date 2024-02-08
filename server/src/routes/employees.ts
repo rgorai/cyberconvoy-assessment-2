@@ -1,10 +1,11 @@
 import { Router } from 'express'
 import { getAllEmployees, getEmployeeById } from '../db/employees'
 import { areValidStrings } from '../utils/errorChecks'
+import { ensureAuthenticated } from '../middleware/oAuth'
 
 const employeesRouter = Router()
 
-employeesRouter.get('/', async (_, res) => {
+employeesRouter.get('/', ensureAuthenticated, async (_, res) => {
   // query all employees
   try {
     return res.status(200).json(await getAllEmployees())
@@ -13,7 +14,7 @@ employeesRouter.get('/', async (_, res) => {
   }
 })
 
-employeesRouter.get('/:employeeId', async (req, res) => {
+employeesRouter.get('/:employeeId', ensureAuthenticated, async (req, res) => {
   const { employeeId } = req.params
 
   // error check

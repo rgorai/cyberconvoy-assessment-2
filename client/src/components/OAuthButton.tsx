@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom'
 import { useAuthInfo } from '../services/authContext'
-import { oAuthLogin } from '../services/authService'
+import { logout, oAuthLogin } from '../services/authService'
 
 const OAuthButton = () => {
-  const { authInfo } = useAuthInfo()
+  const { authInfo, setAuthInfo } = useAuthInfo()
 
   const onLoginClick = () => {
     oAuthLogin().then(({ data }) => {
       window.location.replace(data)
     })
+  }
+
+  const onLogoutClick = () => {
+    setAuthInfo(logout())
   }
 
   return !authInfo.authenticated ? (
@@ -25,9 +29,7 @@ const OAuthButton = () => {
         )}
         {authInfo.user.fullName ?? 'User'}
       </div>
-      <Link className="button" to="/logout">
-        Logout
-      </Link>
+      <button onClick={onLogoutClick}>Logout</button>
     </div>
   )
 }

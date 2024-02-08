@@ -29,11 +29,9 @@ oAuthRouter.get('/callback', async (req, res) => {
   // create express session
   try {
     const tokens = await assignTokens(code as string)
-
-    // perhaps rather insecure, but should be fine for this app
     req.session.tokens = tokens
 
-    const userInfo = await verifyToken(tokens.id_token ?? '')
+    const userInfo = await verifyToken(tokens.id_token)
     req.session.user = userInfo
 
     return res.redirect(REDIRECT_URL)

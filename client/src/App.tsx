@@ -3,12 +3,11 @@ import { Fragment } from 'react'
 import { AuthProvider } from './services/authContext'
 import AuthWrapper from './components/AuthWrapper'
 import NavBar from './components/NavBar'
-import Logout from './components/Logout'
 import DocumentTitleWrapper from './components/DocumentTitleWrapper'
 
 const APP_FEATURES: AppFeatures = [
   {
-    label: 'Home',
+    label: 'Welcome',
     path: '/',
     element: <>home page</>,
     ensureAuthenticated: false,
@@ -23,12 +22,6 @@ const APP_FEATURES: AppFeatures = [
     label: 'Employee Details',
     path: '/employees/:empId',
     element: <>employee details page</>,
-    ensureAuthenticated: true,
-  },
-  {
-    label: 'Logout',
-    path: '/logout',
-    element: <Logout />,
     ensureAuthenticated: true,
   },
 ]

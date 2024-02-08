@@ -31,10 +31,10 @@ export const assignTokens = async (code: string): Promise<Credentials> => {
 }
 
 export const verifyToken = async (
-  idToken: string
+  idToken?: Credentials['id_token']
 ): Promise<UserSessionInfo> => {
   const ticket = await oAuth2Client.verifyIdToken({
-    idToken,
+    idToken: idToken ?? '',
     audience: GOOGLE_CLIENT_ID,
   })
 
