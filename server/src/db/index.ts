@@ -12,6 +12,7 @@ const db = mysql
     user: MYSQL_USER,
     password: MYSQL_PASSWORD,
     database: MYSQL_DATABASE,
+    decimalNumbers: true,
   })
   .promise()
 

@@ -19,6 +19,8 @@ type Employee = {
   salary: number
 }
 
+type EmployeeCreationDetails = Omit<Employee, 'id'>
+
 /**
  * @author rgorai
  * @description the schema for the employee's db table

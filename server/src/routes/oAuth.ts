@@ -8,7 +8,7 @@ import { areValidStrings } from '../utils/errorChecks'
 import { ensureAuthenticated } from '../middleware/oAuth'
 import { NODE_ENV } from '../utils/env'
 
-const REDIRECT_URL = NODE_ENV === 'production' ? '/' : 'http://localhost:5173'
+const REDIRECT_URL = NODE_ENV === 'development' ? 'http://localhost:5173' : '/'
 
 const oAuthRouter = Router()
 
@@ -29,11 +29,9 @@ oAuthRouter.get('/callback', async (req, res) => {
   // create express session
   try {
     const tokens = await assignTokens(code as string)
-
-    // perhaps rather insecure, but should be fine for this app
     req.session.tokens = tokens
 
-    const userInfo = await verifyToken(tokens.id_token ?? '')
+    const userInfo = await verifyToken(tokens.id_token)
     req.session.user = userInfo
 
     return res.redirect(REDIRECT_URL)
