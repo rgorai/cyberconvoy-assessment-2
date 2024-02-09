@@ -1,6 +1,7 @@
 // PRIMITIVES //
 
 import db from '../db'
+import { getISODate } from './strings'
 
 type ErrorFunction = <T extends Record<string, any>>(
   vars: T,
@@ -71,16 +72,6 @@ export const areValidNumbers: ErrorFunction = (
 
 // OTHER //
 
-// export const isValidEmail = (email: any) => {
-//   if (
-//     typeof email !== 'string' ||
-//     !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
-//       email
-//     )
-//   )
-//     throw `Invalid email. Received: ${email}`
-// }
-
 export const isValidDate: ErrorFunction = (dates, pastDatesOnly?: boolean) => {
   for (const k in dates) {
     const dateVal = Date.parse(dates[k])
@@ -105,10 +96,12 @@ export const areValidEmployeeDetails = async (
   details.last_name = details.last_name.trim()
   details.title = details.title.trim()
 
+  // cast numbers
+  details.department_id = Number(details.department_id)
+  details.salary = Number(details.salary)
+
   // standardize date string
-  ;[details.date_of_birth] = new Date(details.date_of_birth)
-    .toISOString()
-    .split('T')
+  details.date_of_birth = getISODate(details.date_of_birth)
 
   // ensure department exists
   const [[data]] = await db.query<DbDepartment[]>(

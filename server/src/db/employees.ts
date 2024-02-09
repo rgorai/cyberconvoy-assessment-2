@@ -1,5 +1,10 @@
 import { areValidNumbers, areValidEmployeeDetails } from '../utils/errorChecks'
-import { isOkInsertSingle, isOkUpdateSingle } from '../utils/typeGuards'
+import {
+  isOkDeleteSingle,
+  isOkInsertSingle,
+  isOkUpdateSingle,
+} from '../utils/typeGuards'
+import { getISODate } from '../utils/strings'
 import db from '.'
 
 export const getAllEmployees = async (): Promise<Employee[]> => {
@@ -18,7 +23,12 @@ export const getEmployeeById = async (
     `SELECT * FROM employees WHERE id = ?`,
     [employeeId]
   )
-  return data ?? null
+  if (!data) return null
+
+  // reformat date
+  data.date_of_birth = getISODate(data.date_of_birth)
+
+  return data
 }
 
 export const insertEmployee = async (
@@ -47,6 +57,7 @@ export const insertEmployee = async (
     ]
   )
 
+  // validate result
   if (!isOkInsertSingle(result))
     throw `Insert failed: ${JSON.stringify(result)}`
 
@@ -60,7 +71,7 @@ export const updateEmployeeDetails = async (
   if (!(await getEmployeeById(details.id))) return null
   await areValidEmployeeDetails(details)
 
-  // insert row
+  // update row
   const [result] = await db.query(
     `UPDATE employees
     SET
@@ -83,8 +94,28 @@ export const updateEmployeeDetails = async (
     ]
   )
 
+  // validate result
   if (!isOkUpdateSingle(result))
-    throw `Insert failed: ${JSON.stringify(result)}`
+    throw `Update failed: ${JSON.stringify(result)}`
 
   return (await getEmployeeById(details.id)) as Employee
+}
+
+export const deleteEmployee = async (
+  employeeId: number
+): Promise<Employee | null> => {
+  // error check
+  const employee = await getEmployeeById(employeeId)
+  if (!employee) return null
+
+  // delete row
+  const [result] = await db.query('DELETE FROM employees WHERE id = ?', [
+    employeeId,
+  ])
+
+  // validate result
+  if (!isOkDeleteSingle(result))
+    throw `Delete failed: ${JSON.stringify(result)}`
+
+  return employee
 }

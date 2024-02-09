@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  deleteEmployee,
   getAllEmployees,
   getEmployeeById,
   insertEmployee,
@@ -92,6 +93,12 @@ employeesRouter
     }
 
     // delete employee row
+    try {
+      const result = await deleteEmployee(Number(employeeId))
+      return result ? res.status(200).json(result) : res.sendStatus(404)
+    } catch (err) {
+      return res.status(500).send(String(err))
+    }
   })
 
 export default employeesRouter
