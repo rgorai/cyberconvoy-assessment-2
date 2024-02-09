@@ -8,6 +8,7 @@
   "scripts": {
     "postinstall": "yarn --cwd client install",
     "dev": "cross-env NODE_ENV=development nodemon --files ./server/src/app.ts",
+    "dev:api": "cross-env NODE_ENV=development-api nodemon --files ./server/src/app.ts",
     "start": "yarn build && node ./server/dist/app.js",
     "build": "yarn build:client && yarn build:server",
     "build:client": "yarn --cwd client build",

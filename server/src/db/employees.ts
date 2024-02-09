@@ -1,10 +1,11 @@
 import { areValidNumbers, areValidEmployeeDetails } from '../utils/errorChecks'
-import {
-  isOkDeleteSingle,
-  isOkInsertSingle,
-  isOkUpdateSingle,
-} from '../utils/typeGuards'
+
 import { getISODate } from '../utils/strings'
+import {
+  isOkSingleDelete,
+  isOkSingleInsert,
+  isOkSingleUpdate,
+} from '../utils/typeGuards'
 import db from '.'
 
 export const getAllEmployees = async (): Promise<Employee[]> => {
@@ -58,7 +59,7 @@ export const insertEmployee = async (
   )
 
   // validate result
-  if (!isOkInsertSingle(result))
+  if (!isOkSingleInsert(result))
     throw `Insert failed: ${JSON.stringify(result)}`
 
   return (await getEmployeeById(result.insertId)) as Employee
@@ -95,7 +96,7 @@ export const updateEmployeeDetails = async (
   )
 
   // validate result
-  if (!isOkUpdateSingle(result))
+  if (!isOkSingleUpdate(result))
     throw `Update failed: ${JSON.stringify(result)}`
 
   return (await getEmployeeById(details.id)) as Employee
@@ -114,7 +115,7 @@ export const deleteEmployee = async (
   ])
 
   // validate result
-  if (!isOkDeleteSingle(result))
+  if (!isOkSingleDelete(result))
     throw `Delete failed: ${JSON.stringify(result)}`
 
   return employee

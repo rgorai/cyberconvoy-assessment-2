@@ -4,12 +4,14 @@ import { AuthProvider } from './services/authContext'
 import AuthWrapper from './components/AuthWrapper'
 import NavBar from './components/NavBar'
 import DocumentTitleWrapper from './components/DocumentTitleWrapper'
+import HomePage from './pages/HomePage'
+import Footer from './components/Footer'
 
 const APP_FEATURES: AppFeatures = [
   {
     label: 'Welcome',
     path: '/',
-    element: <>home page</>,
+    element: <HomePage />,
     ensureAuthenticated: false,
   },
   {
@@ -65,6 +67,8 @@ function App() {
             })}
           </Routes>
         </main>
+
+        <Footer />
       </BrowserRouter>
     </AuthProvider>
   )
