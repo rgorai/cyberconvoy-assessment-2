@@ -1,4 +1,4 @@
-import { areValidStrings, isValidEmployee } from '../utils/errorChecks'
+import { areValidNumbers, areValidEmployeeDetails } from '../utils/errorChecks'
 import { isOkInsertSingle, isOkUpdateSingle } from '../utils/typeGuards'
 import db from '.'
 
@@ -11,7 +11,7 @@ export const getEmployeeById = async (
   employeeId: number
 ): Promise<Employee | null> => {
   // error check
-  areValidStrings({ employeeId })
+  areValidNumbers({ employeeId })
 
   // get employee
   const [[data]] = await db.query<DbEmployee[]>(
@@ -22,10 +22,10 @@ export const getEmployeeById = async (
 }
 
 export const insertEmployee = async (
-  details: Omit<Employee, 'id'>
+  details: EmployeeCreationDetails
 ): Promise<Employee> => {
   // error check
-  await isValidEmployee(details)
+  await areValidEmployeeDetails(details)
 
   // insert row
   const [result] = await db.query(
@@ -55,12 +55,13 @@ export const insertEmployee = async (
 
 export const updateEmployeeDetails = async (
   details: Employee
-): Promise<Employee> => {
+): Promise<Employee | null> => {
   // error check
-  await isValidEmployee(details)
+  if (!(await getEmployeeById(details.id))) return null
+  await areValidEmployeeDetails(details)
 
   // insert row
-  const result = await db.query(
+  const [result] = await db.query(
     `UPDATE employees
     SET
       first_name = ?,

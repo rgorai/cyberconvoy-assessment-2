@@ -3,8 +3,9 @@ import {
   getAllEmployees,
   getEmployeeById,
   insertEmployee,
+  updateEmployeeDetails,
 } from '../db/employees'
-import { areValidStrings, isValidEmployee } from '../utils/errorChecks'
+import { areValidNumbers, areValidEmployeeDetails } from '../utils/errorChecks'
 import { ensureAuthenticated } from '../middleware/oAuth'
 
 const employeesRouter = Router()
@@ -19,27 +20,12 @@ employeesRouter
       return res.status(500).send(String(err))
     }
   })
-  .post(async (req, res) => {
-    const {
-      first_name,
-      last_name,
-      date_of_birth,
-      department_id,
-      title,
-      salary,
-    } = req.body
-    const employeeDetails = {
-      first_name,
-      last_name,
-      date_of_birth,
-      department_id,
-      title,
-      salary,
-    }
+  .post(ensureAuthenticated, async (req, res) => {
+    const employeeDetails: EmployeeCreationDetails = req.body
 
     // error check
     try {
-      await isValidEmployee(employeeDetails)
+      await areValidEmployeeDetails(employeeDetails)
     } catch (err) {
       return res.status(400).send(String(err))
     }
@@ -59,7 +45,7 @@ employeesRouter
 
     // error check
     try {
-      areValidStrings({ employeeId })
+      areValidNumbers({ employeeId })
     } catch (err) {
       return res.status(400).send(String(err))
     }
@@ -67,52 +53,40 @@ employeesRouter
     // retrieve specific employee
     try {
       const employee = await getEmployeeById(Number(employeeId))
-
-      if (!employee) return res.sendStatus(404)
-      return res.status(200).json()
+      return employee ? res.status(200).json(employee) : res.sendStatus(404)
     } catch (err) {
       return res.status(500).send(String(err))
     }
   })
-  .put(async (req, res) => {
+  .put(ensureAuthenticated, async (req, res) => {
     const { employeeId } = req.params
-    const {
-      first_name,
-      last_name,
-      date_of_birth,
-      department_id,
-      title,
-      salary,
-    } = req.body
+    const employeeDetails: EmployeeCreationDetails = req.body
 
     // error check
     try {
-      areValidStrings({ employeeId })
-      await isValidEmployee({
-        first_name,
-        last_name,
-        date_of_birth,
-        department_id,
-        title,
-        salary,
-      })
+      areValidNumbers({ employeeId })
+      await areValidEmployeeDetails(employeeDetails)
     } catch (err) {
       return res.status(400).send(String(err))
     }
 
     // update employee details in db
     try {
-      return res.status(200).json()
+      const employee = await updateEmployeeDetails({
+        ...employeeDetails,
+        id: Number(employeeId),
+      })
+      return employee ? res.status(200).json(employee) : res.sendStatus(404)
     } catch (err) {
       return res.status(500).send(String(err))
     }
   })
-  .delete(async (req, res) => {
+  .delete(ensureAuthenticated, async (req, res) => {
     const { employeeId } = req.params
 
     // error check
     try {
-      areValidStrings({ employeeId })
+      areValidNumbers({ employeeId })
     } catch (err) {
       return res.status(400).send(String(err))
     }

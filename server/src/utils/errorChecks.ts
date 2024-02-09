@@ -89,7 +89,9 @@ export const isValidDate: ErrorFunction = (dates, pastDatesOnly?: boolean) => {
   }
 }
 
-export const isValidEmployee = async (details: Omit<Employee, 'id'>) => {
+export const areValidEmployeeDetails = async (
+  details: EmployeeCreationDetails
+) => {
   const { first_name, last_name, date_of_birth, department_id, title, salary } =
     details
 

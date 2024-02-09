@@ -82,7 +82,7 @@ const seedDb = async () => {
   console.log('Seeding complete')
 }
 
-if (NODE_ENV !== 'production')
+if (NODE_ENV === 'development')
   seedDb().catch((err) => {
     db.end()
     console.error('Seed Error:', String(err))

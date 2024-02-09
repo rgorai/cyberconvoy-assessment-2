@@ -14,7 +14,7 @@ export const departmentsList = [
   'Quality Assurance',
 ]
 
-export const employeesList: Omit<Employee, 'id'>[] = [
+export const employeesList: EmployeeCreationDetails[] = [
   {
     first_name: 'James',
     last_name: 'Smith',

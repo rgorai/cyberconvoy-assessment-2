@@ -1,14 +1,17 @@
 import { Request, Response, NextFunction } from 'express'
 import { areValidStrings } from '../utils/errorChecks'
 import { verifyToken } from '../services/googleAuthService'
+import { NODE_ENV } from '../utils/env'
 
 export const ensureAuthenticated = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { user, tokens } = req.session
+  // is ok for this app only since there are no user-specific resources
+  if (NODE_ENV === 'development') return next()
 
+  const { user, tokens } = req.session
   try {
     if (!(user && tokens)) throw 'No user or tokens in session'
 
