@@ -6,7 +6,10 @@ body {
   @apply bg-gray-900 text-gray-200;
 }
 
-button,
-.btn {
+button {
   @apply pointer-events-auto rounded-md bg-primary px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-primary-light;
+}
+
+button.btn-secondary {
+  @apply bg-transparent text-secondary border border-secondary hover:bg-gray-700;
 }

@@ -8,20 +8,27 @@ import {
 } from '../utils/typeGuards'
 import db from '.'
 
-export const getAllEmployees = async (): Promise<Employee[]> => {
-  const [data] = await db.query<DbEmployee[]>('SELECT * FROM employees')
+export const getAllEmployees = async (): Promise<EmployeeFull[]> => {
+  const [data] = await db.query<DbEmployeeFull[]>(`
+    SELECT employees.*, departments.name AS department_name
+    FROM employees
+    JOIN departments ON employees.department_id = departments.id
+  `)
   return data
 }
 
 export const getEmployeeById = async (
   employeeId: number
-): Promise<Employee | null> => {
+): Promise<EmployeeFull | null> => {
   // error check
   areValidNumbers({ employeeId })
 
   // get employee
-  const [[data]] = await db.query<DbEmployee[]>(
-    `SELECT * FROM employees WHERE id = ?`,
+  const [[data]] = await db.query<DbEmployeeFull[]>(
+    `SELECT employees.*, departments.name AS department_name
+    FROM employees
+    JOIN departments ON employees.department_id = departments.id
+    WHERE employees.id = ?`,
     [employeeId]
   )
   if (!data) return null

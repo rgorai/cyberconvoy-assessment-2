@@ -6,6 +6,9 @@ import NavBar from './components/NavBar'
 import DocumentTitleWrapper from './components/DocumentTitleWrapper'
 import HomePage from './pages/HomePage'
 import Footer from './components/Footer'
+import EmployeesPage from './pages/EmployeesPage'
+import ErrorPage from './pages/ErrorPage'
+import HTTP_CODES from './constants/httpCodes'
 
 const APP_FEATURES: AppFeatures = [
   {
@@ -17,7 +20,7 @@ const APP_FEATURES: AppFeatures = [
   {
     label: 'All Employees',
     path: '/employees',
-    element: <>employees page</>,
+    element: <EmployeesPage />,
     ensureAuthenticated: true,
   },
   {
@@ -65,6 +68,8 @@ function App() {
                 </Fragment>
               )
             })}
+
+            <Route path="*" element={<ErrorPage {...HTTP_CODES[404]} />} />
           </Routes>
         </main>
 
