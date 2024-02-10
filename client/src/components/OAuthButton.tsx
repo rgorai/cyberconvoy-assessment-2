@@ -15,7 +15,9 @@ const OAuthButton = () => {
   }
 
   return !authInfo.authenticated ? (
-    <button onClick={onLoginClick}>Login with Google</button>
+    <button className="btn primary" onClick={onLoginClick}>
+      Login with Google
+    </button>
   ) : (
     <div className="flex flex-row items-center gap-7">
       <div className="flex flex-row items-center gap-3">
@@ -28,7 +30,9 @@ const OAuthButton = () => {
         )}
         {authInfo.user.fullName ?? 'User'}
       </div>
-      <button onClick={onLogoutClick}>Logout</button>
+      <button className="btn primary" onClick={onLogoutClick}>
+        Logout
+      </button>
     </div>
   )
 }

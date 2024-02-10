@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import NewTabIcon from './NewTabIcon'
+import NewTabIcon from './icons/NewTabIcon'
 
 const Footer = () => (
   <div className="flex flex-row justify-end fixed w-full px-[4vw] py-3 bottom-0 border-t border-gray-700">
