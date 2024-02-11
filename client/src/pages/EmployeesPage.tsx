@@ -4,6 +4,7 @@ import { fetchAllEmployees } from '../services/apiService'
 import PageLoader from '../components/wrappers/PageLoader'
 import HTTP_CODES from '../constants/httpCodes'
 import EditIcon from '../components/icons/EditIcon'
+import { useEmployeesData } from '../context/employeesContext'
 
 const EMPLOYEE_HEADERS = [
   'Full Name',
@@ -16,31 +17,32 @@ const EMPLOYEE_HEADERS = [
 const EmployeesPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ServerError | null>(null)
-  const [employeesData, setEmployeesData] = useState<Employee[] | null>(null)
+  const { allEmployees, setAllEmployees } = useEmployeesData()
 
   const getAllEmployees = useCallback(() => {
     setLoading(true)
     fetchAllEmployees()
       .then((employees) => {
         console.log('all employees', employees)
-        setEmployeesData(employees)
+        setAllEmployees(employees)
       })
       .catch((err) => {
-        console.error('submit error', err?.response?.data ?? err)
+        console.error('get all employees error', err?.response?.data ?? err)
         if (err.response) setError(err.response)
         else setError(HTTP_CODES[500])
       })
       .then(() => setLoading(false))
-  }, [])
+  }, [setAllEmployees])
 
+  // fetch all employees on render if not already in state
   useEffect(() => {
-    getAllEmployees()
-  }, [getAllEmployees])
+    if (!allEmployees) getAllEmployees()
+  }, [allEmployees, getAllEmployees])
 
   const bodyCellSpacing = ['px-5', 'py-4']
 
   return (
-    <PageLoader loading={loading} error={error} pageData={employeesData}>
+    <PageLoader loading={loading} error={error} pageData={allEmployees}>
       {(employees) => (
         <div className="p-16 pb-24 max-w-[85rem] mx-auto">
           <div className="flex flex-row justify-between">
@@ -48,6 +50,7 @@ const EmployeesPage = () => {
 
             <div>
               <button className="btn btn-tertiary mr-5">Download as CSV</button>
+
               <Link
                 className="btn btn-secondary inline-block"
                 to="/employees/create"
@@ -101,14 +104,6 @@ const EmployeesPage = () => {
                         className="btn btn-tertiary inline-block !px-2"
                         to={`/employees/${employee.id}`}
                         title={`Edit ${employee.fullName}`}
-                      >
-                        <EditIcon />
-                      </Link>
-
-                      <Link
-                        className="btn btn-tertiary inline-block !px-2"
-                        to={`/employees/${employee.id}`}
-                        title={`Delete ${employee.fullName}`}
                       >
                         <EditIcon />
                       </Link>

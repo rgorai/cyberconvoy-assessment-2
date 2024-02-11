@@ -41,7 +41,7 @@ const FormInput = <T extends Record<any, any>>(props: Props<T>) => {
       )}
 
       {props.inputError && (
-        <div className="text-xs mt-1 ml-1 text-red-500">{props.inputError}</div>
+        <div className="text-xs mt-1 text-red-500">{props.inputError}</div>
       )}
     </div>
   )

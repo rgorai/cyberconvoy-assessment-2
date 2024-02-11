@@ -1,4 +1,4 @@
-import { useAuthInfo } from '../services/authContext'
+import { useAuthInfo } from '../context/authContext'
 import { logout, oAuthLogin } from '../services/authService'
 
 const OAuthButton = () => {

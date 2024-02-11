@@ -7,7 +7,10 @@ import {
   areValidStrings,
 } from '../utils/errorChecks'
 import { getFormUtils } from '../utils/forms'
-import { submitNewEmployeeData } from '../services/apiService'
+import { submitNewEmployeeData, updateEmployee } from '../services/apiService'
+import { getISODate } from '../utils/strings'
+import { useEmployeesData } from '../context/employeesContext'
+import { parseFormEmployeeData } from '../utils/parsers'
 import FormInput from './FormInput'
 import Loading from './Loading'
 
@@ -39,7 +42,9 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     },
     date_of_birth: {
       label: 'Date of Birth',
-      defaultValue: employeeDetails?.dateOfBirth.toISOString() ?? '',
+      defaultValue: employeeDetails?.dateOfBirth
+        ? getISODate(employeeDetails.dateOfBirth)
+        : '',
       type: 'date',
       validation: (dob) => areValidDates({ dob }, { pastDatesOnly: true }),
       invalidValueMessage: 'Please select a date from the past.',
@@ -83,7 +88,14 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
   const [formErrorState, setFormErrorState] = useState(defaultFormErrorState)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const { pushAllEmployees } = useEmployeesData()
   const navigate = useNavigate()
+
+  // disable form if form data has not changed or
+  // if submission is alreadyloading
+  const submitDisabled =
+    JSON.stringify(formState) === JSON.stringify(defaultFormState) ||
+    submitLoading
 
   const onInputChange = (key: keyof ApiEmployeeCreationDetails, value: any) =>
     setFormState((prev) => ({ ...prev, [key]: value }))
@@ -92,6 +104,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     ev.preventDefault()
 
     // error check
+    setSubmitError(null)
     setFormErrorState(defaultFormErrorState)
     let formHasErrors = false
     for (const key of Object.keys(
@@ -108,15 +121,20 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
       }
 
     // submit data if no errors present
-    if (!formHasErrors) {
+    if (!formHasErrors && !submitDisabled) {
+      const parsedFormData = parseFormEmployeeData(formState)
+
+      // perform appropriate API operation based on
+      // if we are creating or updating
+      const apiOperation = employeeDetails
+        ? updateEmployee(employeeDetails.id, parsedFormData)
+        : submitNewEmployeeData(parsedFormData)
+
       setSubmitLoading(true)
-      submitNewEmployeeData({
-        ...formState,
-        department_id: Number(formState.department_id),
-        salary: Number(formState.salary),
-      })
-        .then(({ data }) => {
-          console.log('submit successful', data)
+      apiOperation
+        .then((newEmployee) => {
+          console.log('submit successful', newEmployee)
+          pushAllEmployees(newEmployee)
           navigate('/employees')
         })
         .catch((err) => {
@@ -127,18 +145,19 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     }
   }
 
+  // split form into separate sections based on the following keys
   const personalKeys: (keyof ApiEmployeeCreationDetails)[] = [
     'first_name',
     'last_name',
     'date_of_birth',
   ]
-
   const jobKeys: (keyof ApiEmployeeCreationDetails)[] = [
     'department_id',
     'title',
     'salary',
   ]
 
+  // create UI based on split sections
   const getFormSection = (
     label: string,
     keys: (keyof ApiEmployeeCreationDetails)[]
@@ -162,7 +181,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
   )
 
   return (
-    <div className="p-16">
+    <div className={cx({ 'p-16': !employeeDetails })}>
       {!employeeDetails && (
         <h1 className="text-3xl">Enter New Employee Details</h1>
       )}
@@ -175,7 +194,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
 
         <div className="relative mt-10">
           {submitError && (
-            <div className="absolute left-0 rounded-md bg-red-200 text-red-800 px-3 py-2">
+            <div className="absolute left-0 rounded-md bg-red-200 text-red-800 px-3 py-2 max-w-[60%]">
               {`Submission Error: ${submitError}`}
             </div>
           )}
@@ -187,6 +206,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
               })}
               disabled={submitLoading}
               onClick={() => navigate(-1)}
+              type="button"
             >
               Cancel
             </button>
@@ -194,13 +214,13 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
             <button
               className={cx(
                 'items-center btn btn-primary w-28 flex flex-row justify-center gap-2',
-                { disabled: submitLoading }
+                { disabled: submitDisabled }
               )}
-              disabled={submitLoading}
+              disabled={submitDisabled}
               type="submit"
             >
               {submitLoading && <Loading className="border-white" size={2} />}
-              Save
+              Done
             </button>
           </div>
         </div>

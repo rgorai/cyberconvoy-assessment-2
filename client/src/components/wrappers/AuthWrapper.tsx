@@ -1,6 +1,6 @@
 import { PropsWithChildren, useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuthInfo } from '../../services/authContext'
+import { useAuthInfo } from '../../context/authContext'
 import { authenticateUser, logout } from '../../services/authService'
 
 type Props = {

@@ -1,26 +1,36 @@
 import axios from 'axios'
-
-const parseEmployeeData = (data: ApiEmployee): Employee => ({
-  id: data.id,
-  firstName: data.first_name,
-  lastName: data.last_name,
-  fullName: `${data.first_name} ${data.last_name}`,
-  dateOfBirth: new Date(data.date_of_birth),
-  department: {
-    id: data.department_id,
-    name: data.department_name,
-  },
-  title: data.title,
-  salary: data.salary,
-})
+import { parseApiEmployeeData } from '../utils/parsers'
 
 export const fetchAllEmployees = async (): Promise<Employee[]> => {
   const { data } = await axios.get<ApiEmployee[]>('/api/employees')
-  return data.map((employee) => parseEmployeeData(employee))
+  return data.map((employee) => parseApiEmployeeData(employee))
 }
 
-export const submitNewEmployeeData = (details: ApiEmployeeCreationDetails) =>
-  axios.post('/api/employees', details)
+export const fetchSingleEmployee = async (empId: number): Promise<Employee> => {
+  const { data } = await axios.get<ApiEmployee>(`/api/employees/${empId}`)
+  return parseApiEmployeeData(data)
+}
+
+export const submitNewEmployeeData = async (
+  details: ApiEmployeeCreationDetails
+): Promise<Employee> => {
+  const { data } = await axios.post<ApiEmployee>('/api/employees', details)
+  return parseApiEmployeeData(data)
+}
+
+export const updateEmployee = async (
+  empId: number,
+  details: ApiEmployeeCreationDetails
+): Promise<Employee> => {
+  const { data } = await axios.put<ApiEmployee>(
+    `/api/employees/${empId}`,
+    details
+  )
+  return parseApiEmployeeData(data)
+}
+
+export const deleteEmployee = (empId: number) =>
+  axios.delete(`/api/employees/${empId}`)
 
 export const fetchAllDepartments = (): Promise<ApiDepartment[]> =>
   axios.get('/api/departments')
