@@ -1,6 +1,3 @@
-import db from '../db'
-import { getISODate } from './strings'
-
 type ErrorFunction<Options = any> = <T extends Record<string, any>>(
   vars: T,
   options?: Options
@@ -75,35 +72,4 @@ export const areValidDates: ErrorFunction<{ pastDatesOnly?: boolean }> = (
     if (isNaN(dateVal) || (options?.pastDatesOnly && Date.now() < dateVal))
       throw `${k} must be a valid date${options?.pastDatesOnly ? ' from the past' : ''}. Received: ${dates[k]}`
   }
-}
-
-export const areValidEmployeeDetails = async (
-  details: EmployeeCreationDetails
-) => {
-  const { first_name, last_name, date_of_birth, department_id, title, salary } =
-    details
-
-  // validate fields
-  areValidStrings({ first_name, last_name, title })
-  areValidNumbers({ department_id, salary }, { min: 0 })
-  areValidDates({ date_of_birth }, { pastDatesOnly: true })
-
-  // trim strings
-  details.first_name = details.first_name.trim()
-  details.last_name = details.last_name.trim()
-  details.title = details.title.trim()
-
-  // cast numbers
-  details.department_id = Number(details.department_id)
-  details.salary = Number(details.salary)
-
-  // standardize date string
-  details.date_of_birth = getISODate(details.date_of_birth)
-
-  // ensure department exists
-  const [[data]] = await db.query<DbDepartment[]>(
-    `SELECT * FROM departments WHERE id = ?`,
-    [details.department_id]
-  )
-  if (!data) throw `Department ${details.department_id} does not exist.`
 }

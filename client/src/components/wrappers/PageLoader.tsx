@@ -1,5 +1,5 @@
-import ErrorPage from '../pages/ErrorPage'
-import Loading from './Loading'
+import ErrorPage from '../../pages/ErrorPage'
+import Loading from '../Loading'
 
 type Props<T> = {
   loading: boolean
@@ -18,8 +18,6 @@ const PageLoader = <T,>({ loading, error, pageData, children }: Props<T>) =>
     <ErrorPage {...error} />
   ) : pageData ? (
     children(pageData)
-  ) : (
-    <>Page Loader Error</>
-  )
+  ) : null
 
 export default PageLoader

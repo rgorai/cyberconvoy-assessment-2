@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchAllEmployees } from '../services/apiService'
-import PageLoader from '../components/PageLoader'
+import PageLoader from '../components/wrappers/PageLoader'
 import HTTP_CODES from '../constants/httpCodes'
 import EditIcon from '../components/icons/EditIcon'
 
@@ -9,7 +9,7 @@ const EMPLOYEE_HEADERS = [
   'Full Name',
   'Date of Birth',
   'Department',
-  'Title',
+  'Job Title',
   'Salary',
 ]
 
@@ -26,7 +26,7 @@ const EmployeesPage = () => {
         setEmployeesData(employees)
       })
       .catch((err) => {
-        console.error('fetch emploees error', err)
+        console.error('submit error', err?.response?.data ?? err)
         if (err.response) setError(err.response)
         else setError(HTTP_CODES[500])
       })
@@ -42,13 +42,18 @@ const EmployeesPage = () => {
   return (
     <PageLoader loading={loading} error={error} pageData={employeesData}>
       {(employees) => (
-        <div className="p-16 max-w-[85rem] mx-auto">
+        <div className="p-16 pb-24 max-w-[85rem] mx-auto">
           <div className="flex flex-row justify-between">
             <h1 className="text-4xl">Employees</h1>
 
             <div>
-              <button className="btn tertiary mr-5">Download as CSV</button>
-              <button className="btn secondary">Add Employee</button>
+              <button className="btn btn-tertiary mr-5">Download as CSV</button>
+              <Link
+                className="btn btn-secondary inline-block"
+                to="/employees/create"
+              >
+                Add Employee
+              </Link>
             </div>
           </div>
 
@@ -68,9 +73,9 @@ const EmployeesPage = () => {
               <tbody>
                 {employees.map((employee) => (
                   <tr key={employee.id}>
-                    <td
-                      className={bodyCellSpacing.join(' ')}
-                    >{`${employee.firstName} ${employee.lastName}`}</td>
+                    <td className={bodyCellSpacing.join(' ')}>
+                      {employee.fullName}
+                    </td>
                     {[
                       employee.dateOfBirth.toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -90,11 +95,20 @@ const EmployeesPage = () => {
                     ))}
 
                     <td
-                      className={`${bodyCellSpacing[1]} flex flex-row items-center`}
+                      className={`${bodyCellSpacing[1]} flex flex-row items-center gap-2`}
                     >
                       <Link
-                        className="btn tertiary inline-block !px-2"
+                        className="btn btn-tertiary inline-block !px-2"
                         to={`/employees/${employee.id}`}
+                        title={`Edit ${employee.fullName}`}
+                      >
+                        <EditIcon />
+                      </Link>
+
+                      <Link
+                        className="btn btn-tertiary inline-block !px-2"
+                        to={`/employees/${employee.id}`}
+                        title={`Delete ${employee.fullName}`}
                       >
                         <EditIcon />
                       </Link>

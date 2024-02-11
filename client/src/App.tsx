@@ -1,14 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Fragment } from 'react'
 import { AuthProvider } from './services/authContext'
-import AuthWrapper from './components/AuthWrapper'
+import AuthWrapper from './components/wrappers/AuthWrapper'
 import NavBar from './components/NavBar'
-import DocumentTitleWrapper from './components/DocumentTitleWrapper'
+import DocumentTitleWrapper from './components/wrappers/DocumentTitleWrapper'
 import HomePage from './pages/HomePage'
 import Footer from './components/Footer'
 import EmployeesPage from './pages/EmployeesPage'
 import ErrorPage from './pages/ErrorPage'
 import HTTP_CODES from './constants/httpCodes'
+import EmployeeForm from './components/EmployeeForm'
+import EmployeeDetailsPage from './pages/EmployeeDetailsPage'
 
 const APP_FEATURES: AppFeatures = [
   {
@@ -24,9 +26,15 @@ const APP_FEATURES: AppFeatures = [
     ensureAuthenticated: true,
   },
   {
+    label: 'Create Employee',
+    path: '/employees/create',
+    element: <EmployeeForm />,
+    ensureAuthenticated: true,
+  },
+  {
     label: 'Employee Details',
     path: '/employees/:empId',
-    element: <>employee details page</>,
+    element: <EmployeeDetailsPage />,
     ensureAuthenticated: true,
   },
 ]

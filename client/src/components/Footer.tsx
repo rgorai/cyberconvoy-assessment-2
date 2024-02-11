@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import NewTabIcon from './icons/NewTabIcon'
 
 const Footer = () => (
-  <div className="flex flex-row justify-end fixed w-full px-[4vw] py-3 bottom-0 border-t border-gray-700">
+  <div className="flex flex-row justify-end fixed bottom-0 w-full px-[4vw] py-3 border-t border-gray-700 bg-gray-900">
     <div>
       Created by{' '}
       <Link

@@ -15,7 +15,7 @@ const OAuthButton = () => {
   }
 
   return !authInfo.authenticated ? (
-    <button className="btn primary" onClick={onLoginClick}>
+    <button className="btn btn-primary" onClick={onLoginClick}>
       Login with Google
     </button>
   ) : (
@@ -30,7 +30,7 @@ const OAuthButton = () => {
         )}
         {authInfo.user.fullName ?? 'User'}
       </div>
-      <button className="btn primary" onClick={onLogoutClick}>
+      <button className="btn btn-primary" onClick={onLogoutClick}>
         Logout
       </button>
     </div>

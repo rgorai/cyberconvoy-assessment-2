@@ -1,13 +1,15 @@
 import '../styles/loading.css'
+import cx from 'classnames'
 
 type Props = {
+  className?: string
   size?: number
 }
 
-const Loading = ({ size }: Props) => {
+const Loading = ({ className, size }: Props) => {
   return (
     <span
-      className="load-spinner"
+      className={cx('load-spinner', className)}
       style={{
         ...(size
           ? {

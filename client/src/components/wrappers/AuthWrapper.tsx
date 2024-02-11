@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuthInfo } from '../services/authContext'
-import { authenticateUser, logout } from '../services/authService'
+import { useAuthInfo } from '../../services/authContext'
+import { authenticateUser, logout } from '../../services/authService'
 
 type Props = {
   ensureNotAuthenticated: boolean | null
@@ -16,8 +16,7 @@ const AuthWrapper = (props: Props & PropsWithChildren) => {
     authenticateUser()
       .then(({ data }) => setAuthInfo({ authenticated: true, user: data }))
       .catch(() => setAuthInfo(logout()))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
+  }, [setAuthInfo])
 
   return props.ensureNotAuthenticated === authInfo.authenticated ? (
     props.ensureNotAuthenticated ? (

@@ -10,16 +10,20 @@ body {
   @apply pointer-events-auto rounded-md px-3 py-2 text-[0.8125rem] font-semibold leading-5;
 }
 
-.primary {
-  @apply pointer-events-auto rounded-md bg-primary px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-primary-light;
+.btn-primary {
+  @apply pointer-events-auto rounded-md bg-primary px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-primary-light border border-primary;
 }
 
-.secondary {
+.btn-secondary {
   @apply bg-transparent text-secondary border border-secondary hover:bg-gray-700;
 }
 
-.tertiary {
+.btn-tertiary {
   @apply bg-transparent text-gray-300 border border-gray-400 hover:bg-gray-700;
+}
+
+.btn.disabled {
+  @apply cursor-not-allowed pointer-events-none opacity-70;
 }
 
 table {
@@ -30,4 +34,9 @@ table {
 
 table tr:nth-of-type(even) {
   @apply bg-gray-800;
+}
+
+input,
+select {
+  @apply text-gray-200 bg-gray-700 outline-0 rounded-md px-3 py-2 focus:outline focus:outline-1 focus:outline-primary;
 }
