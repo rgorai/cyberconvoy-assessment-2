@@ -26,6 +26,7 @@ const OAuthButton = () => {
             className="w-9 rounded-full"
             src={authInfo.user.picture}
             alt="Profile Picture"
+            referrerPolicy="no-referrer"
           />
         )}
         {authInfo.user.fullName ?? 'User'}

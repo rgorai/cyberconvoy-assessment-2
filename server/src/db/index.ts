@@ -1,6 +1,6 @@
 import mysql from 'mysql2'
 import {
-  MYSQL_DATABASE,
+  MYSQL_DATABASE_NAME,
   MYSQL_HOST,
   MYSQL_PASSWORD,
   MYSQL_USER,
@@ -11,7 +11,7 @@ const db = mysql
     host: MYSQL_HOST,
     user: MYSQL_USER,
     password: MYSQL_PASSWORD,
-    database: MYSQL_DATABASE,
+    database: MYSQL_DATABASE_NAME,
     decimalNumbers: true,
   })
   .promise()

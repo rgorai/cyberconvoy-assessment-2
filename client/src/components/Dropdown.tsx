@@ -32,6 +32,7 @@ const Dropdown = (props: Props & React.PropsWithChildren) => {
       <button
         className={props.buttonClassname}
         title={props.buttonTitle}
+        aria-label={props.buttonTitle}
         onClick={toggleDropdown}
       >
         {props.buttonContent}
