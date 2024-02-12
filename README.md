@@ -30,9 +30,9 @@ Build and run the production build of the application. Open http://localhost:300
 
 - This is my first time implementing a MySQL database, Google OAuth and TailwindCSS, so I'm not very familiar with the best coding and security practices with these technologies, so I've attempted them as best I can based on research and my experience with similar technologies
 
-- The app uses server-side session management so it briefly flashes UI for unauthenticated users on window refresh even when you are authenticated, which irks me, so if I had more time I would implement client-side cookies into the auth system to remedy this
+- The app uses server-side session management so it briefly flashes UI for unauthenticated users on window refresh even when you are authenticated. Since this does not impede the functionality of the site but does personally irk me, I would implement client-side cookies into the auth system to remedy this given more time
 
-- Some aspects of the application may seem somewhat over-engineered for the scale of this app - these are pasted from my personal, relatively larger-scale projects. I included these partially to expedite my development time for those aspects, but mainly to help convey my thought processes
+- Some aspects of the application may seem somewhat over-engineered for the scale of this app - these are snippets from some of my other personal projects. I included these partially to expedite my development time for those aspects, but mainly to help convey my thought processes
 
 - I left in the console statements for API calls so you can observe the state management system conserving them
 
