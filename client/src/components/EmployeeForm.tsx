@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import cx from 'classnames'
 import {
@@ -15,6 +15,7 @@ import {
 import { getISODate } from '../utils/strings'
 import { useEmployeesData } from '../context/employeesContext'
 import { parseFormEmployeeData } from '../utils/parsers'
+import { useDepartmentsData } from '../context/departmentsContext'
 import FormInput from './FormInput'
 import Loading from './Loading'
 
@@ -25,6 +26,8 @@ type Props = {
 }
 
 const EmployeeForm = ({ employeeDetails }: Props) => {
+  const { departments } = useDepartmentsData()
+
   const FORM_SPECS: FormSpecs<ApiEmployeeCreationDetails> = {
     first_name: {
       label: 'First Name',
@@ -59,9 +62,11 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
       defaultValue: String(employeeDetails?.department.id) ?? '',
       type: 'select',
       options: [
-        { label: 'Select a department', value: -1 },
-        { label: 'test1', value: 0 },
-        { label: 'test2', value: 1 },
+        { label: '--Select a department--', value: '' },
+        ...departments.map((e) => ({
+          label: e.name,
+          value: String(e.id),
+        })),
       ],
       validation: (departmentId) =>
         areValidNumbers({ departmentId }, { min: 0 }),
@@ -110,7 +115,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     setSubmitError(err?.response?.data ?? 'See console')
   }
 
-  const onFormSubmit: FormEventHandler<HTMLFormElement> = (ev) => {
+  const onFormSubmit: React.FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault()
     setSubmitError(null)
     setFormErrorState(defaultFormErrorState)

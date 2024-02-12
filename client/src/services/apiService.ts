@@ -32,5 +32,7 @@ export const updateEmployeeData = async (
 export const deleteEmployeeData = (empId: number) =>
   axios.delete(`/api/employees/${empId}`)
 
-export const fetchAllDepartments = (): Promise<ApiDepartment[]> =>
-  axios.get('/api/departments')
+export const fetchAllDepartments = async (): Promise<ApiDepartment[]> => {
+  const { data } = await axios.get<ApiDepartment[]>('/api/departments')
+  return data
+}

@@ -1,13 +1,4 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from 'react'
-
-// At scale, the implementation of this state management would be
-// better suited with Redux as opposed to React Context API
+import { createContext, useCallback, useContext, useState } from 'react'
 
 type EmployeesState = {
   allEmployees: Employee[] | null
@@ -21,7 +12,7 @@ const DEFAULT_STATE: EmployeesState = {
 
 const employeesContext = createContext<any>(DEFAULT_STATE)
 
-export const EmployeesProvider = (props: PropsWithChildren) => {
+export const EmployeesProvider = (props: React.PropsWithChildren) => {
   const [allEmployees, _setAllEmployees] = useState(DEFAULT_STATE.allEmployees)
   const [individualEmployees, setIndividualEmployees] = useState(
     DEFAULT_STATE.individualEmployees

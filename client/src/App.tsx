@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Fragment } from 'react'
-import { AuthProvider } from './context/authContext'
 import AuthWrapper from './components/wrappers/AuthWrapper'
 import NavBar from './components/NavBar'
 import DocumentTitleWrapper from './components/wrappers/DocumentTitleWrapper'
@@ -11,7 +10,8 @@ import ErrorPage from './pages/ErrorPage'
 import HTTP_CODES from './constants/httpCodes'
 import EmployeeForm from './components/EmployeeForm'
 import EmployeeDetailsPage from './pages/EmployeeDetailsPage'
-import { EmployeesProvider } from './context/employeesContext'
+import PrefetchDepartments from './services/PrefetchDepartments'
+import AllContextProviders from './context'
 
 const APP_FEATURES: AppFeatures = [
   {
@@ -42,53 +42,51 @@ const APP_FEATURES: AppFeatures = [
 
 function App() {
   return (
-    <AuthProvider>
-      <EmployeesProvider>
-        <BrowserRouter>
-          <NavBar />
+    <AllContextProviders>
+      <PrefetchDepartments />
 
-          <main>
-            <Routes>
-              {APP_FEATURES.map((feature) => {
-                const currRoute = (
-                  <Route
-                    path={feature.path}
-                    element={
-                      <DocumentTitleWrapper pageTitle={feature.label}>
-                        {feature.element}
-                      </DocumentTitleWrapper>
-                    }
-                  />
-                )
-                return (
-                  <Fragment key={feature.path}>
-                    {feature.ensureAuthenticated === null ? (
-                      currRoute
-                    ) : (
-                      <Route
-                        element={
-                          <AuthWrapper
-                            ensureNotAuthenticated={
-                              !feature.ensureAuthenticated
-                            }
-                          />
-                        }
-                      >
-                        {currRoute}
-                      </Route>
-                    )}
-                  </Fragment>
-                )
-              })}
+      <BrowserRouter>
+        <NavBar />
 
-              <Route path="*" element={<ErrorPage {...HTTP_CODES[404]} />} />
-            </Routes>
-          </main>
+        <main>
+          <Routes>
+            {APP_FEATURES.map((feature) => {
+              const currRoute = (
+                <Route
+                  path={feature.path}
+                  element={
+                    <DocumentTitleWrapper pageTitle={feature.label}>
+                      {feature.element}
+                    </DocumentTitleWrapper>
+                  }
+                />
+              )
+              return (
+                <Fragment key={feature.path}>
+                  {feature.ensureAuthenticated === null ? (
+                    currRoute
+                  ) : (
+                    <Route
+                      element={
+                        <AuthWrapper
+                          ensureNotAuthenticated={!feature.ensureAuthenticated}
+                        />
+                      }
+                    >
+                      {currRoute}
+                    </Route>
+                  )}
+                </Fragment>
+              )
+            })}
 
-          <Footer />
-        </BrowserRouter>
-      </EmployeesProvider>
-    </AuthProvider>
+            <Route path="*" element={<ErrorPage {...HTTP_CODES[404]} />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </BrowserRouter>
+    </AllContextProviders>
   )
 }
 

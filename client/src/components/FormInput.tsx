@@ -20,7 +20,12 @@ const FormInput = <T extends Record<any, any>>(props: Props<T>) => {
       </label>
 
       {isSelectType(props.inputSpec) ? (
-        <select id={keyStr} onChange={props.onChange}>
+        <select
+          id={keyStr}
+          value={props.currVal}
+          onChange={props.onChange}
+          required={props.inputSpec.required}
+        >
           {props.inputSpec.options.map((option) => (
             <option value={option.value} key={option.value}>
               {option.label}

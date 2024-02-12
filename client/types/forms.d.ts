@@ -6,7 +6,7 @@
  */
 type InputOption = {
   label: string
-  value: any
+  value: string
 }
 
 /**
