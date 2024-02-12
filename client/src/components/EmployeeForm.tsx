@@ -7,7 +7,11 @@ import {
   areValidStrings,
 } from '../utils/errorChecks'
 import { getFormUtils } from '../utils/forms'
-import { submitNewEmployeeData, updateEmployee } from '../services/apiService'
+import {
+  deleteEmployeeData,
+  submitNewEmployeeData,
+  updateEmployeeData,
+} from '../services/apiService'
 import { getISODate } from '../utils/strings'
 import { useEmployeesData } from '../context/employeesContext'
 import { parseFormEmployeeData } from '../utils/parsers'
@@ -88,7 +92,8 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
   const [formErrorState, setFormErrorState] = useState(defaultFormErrorState)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const { pushAllEmployees } = useEmployeesData()
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const { pushAllEmployees, deleteEmployee } = useEmployeesData()
   const navigate = useNavigate()
 
   // disable form if form data has not changed or
@@ -100,12 +105,17 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
   const onInputChange = (key: keyof ApiEmployeeCreationDetails, value: any) =>
     setFormState((prev) => ({ ...prev, [key]: value }))
 
+  const onApiCallError = (err: any) => {
+    console.error('submit error', err?.response?.data ?? err)
+    setSubmitError(err?.response?.data ?? 'See console')
+  }
+
   const onFormSubmit: FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault()
-
-    // error check
     setSubmitError(null)
     setFormErrorState(defaultFormErrorState)
+
+    // error check
     let formHasErrors = false
     for (const key of Object.keys(
       FORM_SPECS
@@ -124,25 +134,37 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     if (!formHasErrors && !submitDisabled) {
       const parsedFormData = parseFormEmployeeData(formState)
 
-      // perform appropriate API operation based on
-      // if we are creating or updating
+      // perform appropriate API operation based
+      // on if we are creating or updating
       const apiOperation = employeeDetails
-        ? updateEmployee(employeeDetails.id, parsedFormData)
+        ? updateEmployeeData(employeeDetails.id, parsedFormData)
         : submitNewEmployeeData(parsedFormData)
 
       setSubmitLoading(true)
       apiOperation
         .then((newEmployee) => {
-          console.log('submit successful', newEmployee)
+          console.log(
+            employeeDetails ? 'update' : 'create',
+            'successful',
+            newEmployee
+          )
           pushAllEmployees(newEmployee)
           navigate('/employees')
         })
-        .catch((err) => {
-          console.error('submit error', err?.response?.data ?? err)
-          setSubmitError(err?.response?.data ?? 'See console')
-        })
+        .catch(onApiCallError)
         .then(() => setSubmitLoading(false))
     }
+  }
+
+  const onDeleteConfirm = () => {
+    if (employeeDetails)
+      deleteEmployeeData(employeeDetails.id)
+        .then(() => {
+          console.log('delete successful', employeeDetails.fullName)
+          deleteEmployee(employeeDetails.id)
+          navigate('/employees')
+        })
+        .catch(onApiCallError)
   }
 
   // split form into separate sections based on the following keys
@@ -182,7 +204,34 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
 
   return (
     <div className={cx({ 'p-16': !employeeDetails })}>
-      {!employeeDetails && (
+      {employeeDetails ? (
+        <div className="flex flex-row justify-between">
+          <h1 className="text-3xl">{`${employeeDetails.fullName}'s Details`}</h1>
+          <div>
+            <button
+              className="btn btn-danger"
+              onClick={() =>
+                showConfirmDelete
+                  ? onDeleteConfirm()
+                  : setShowConfirmDelete(true)
+              }
+            >
+              {showConfirmDelete
+                ? `Confirm delete for ${employeeDetails.fullName}`
+                : 'Delete'}
+            </button>
+
+            {showConfirmDelete && (
+              <button
+                className="btn btn-tertiary ml-4"
+                onClick={() => setShowConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
         <h1 className="text-3xl">Enter New Employee Details</h1>
       )}
 

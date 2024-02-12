@@ -39,22 +39,10 @@ export const EmployeeDetailsPage = () => {
     if (!currEmployeeDetails && empId) getEmployeeDetails(Number(empId))
   }, [currEmployeeDetails, empId, getEmployeeDetails])
 
-  const onDelete = () => {
-    //
-  }
-
   return (
     <PageLoader loading={loading} error={error} pageData={currEmployeeDetails}>
       {(employee) => (
         <div className="p-16">
-          <div className="flex flex-row justify-between">
-            <h1 className="text-3xl">{`${employee.fullName}'s Details`}</h1>
-
-            <button className="btn btn-danger" onClick={onDelete}>
-              Delete
-            </button>
-          </div>
-
           <EmployeeForm employeeDetails={employee} />
         </div>
       )}

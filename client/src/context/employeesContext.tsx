@@ -69,6 +69,16 @@ export const EmployeesProvider = (props: PropsWithChildren) => {
     [addIndividualEmployee]
   )
 
+  const deleteEmployee = useCallback((empId: number) => {
+    _setAllEmployees(
+      (prev) => prev?.filter((employee) => employee.id !== empId) ?? null
+    )
+    setIndividualEmployees((prev) => {
+      const { [empId]: _, ...rest } = prev
+      return rest
+    })
+  }, [])
+
   return (
     <employeesContext.Provider
       value={{
@@ -77,6 +87,7 @@ export const EmployeesProvider = (props: PropsWithChildren) => {
         pushAllEmployees,
         individualEmployees,
         addIndividualEmployee,
+        deleteEmployee,
       }}
       {...props}
     />
@@ -89,4 +100,5 @@ export const useEmployeesData = (): {
   pushAllEmployees: (employee: Employee) => void
   individualEmployees: EmployeesState['individualEmployees']
   addIndividualEmployee: (employee: Employee) => void
+  deleteEmployee: (empId: number) => void
 } => useContext(employeesContext)

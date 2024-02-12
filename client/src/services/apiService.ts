@@ -18,7 +18,7 @@ export const submitNewEmployeeData = async (
   return parseApiEmployeeData(data)
 }
 
-export const updateEmployee = async (
+export const updateEmployeeData = async (
   empId: number,
   details: ApiEmployeeCreationDetails
 ): Promise<Employee> => {
@@ -29,7 +29,7 @@ export const updateEmployee = async (
   return parseApiEmployeeData(data)
 }
 
-export const deleteEmployee = (empId: number) =>
+export const deleteEmployeeData = (empId: number) =>
   axios.delete(`/api/employees/${empId}`)
 
 export const fetchAllDepartments = (): Promise<ApiDepartment[]> =>
