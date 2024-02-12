@@ -1,26 +1,34 @@
 import { areValidNumbers, areValidEmployeeDetails } from '../utils/errorChecks'
-import {
-  isOkDeleteSingle,
-  isOkInsertSingle,
-  isOkUpdateSingle,
-} from '../utils/typeGuards'
+
 import { getISODate } from '../utils/strings'
+import {
+  isOkSingleDelete,
+  isOkSingleInsert,
+  isOkSingleUpdate,
+} from '../utils/typeGuards'
 import db from '.'
 
-export const getAllEmployees = async (): Promise<Employee[]> => {
-  const [data] = await db.query<DbEmployee[]>('SELECT * FROM employees')
+export const getAllEmployees = async (): Promise<EmployeeFull[]> => {
+  const [data] = await db.query<DbEmployeeFull[]>(`
+    SELECT employees.*, departments.name AS department_name
+    FROM employees
+    JOIN departments ON employees.department_id = departments.id
+  `)
   return data
 }
 
 export const getEmployeeById = async (
   employeeId: number
-): Promise<Employee | null> => {
+): Promise<EmployeeFull | null> => {
   // error check
   areValidNumbers({ employeeId })
 
   // get employee
-  const [[data]] = await db.query<DbEmployee[]>(
-    `SELECT * FROM employees WHERE id = ?`,
+  const [[data]] = await db.query<DbEmployeeFull[]>(
+    `SELECT employees.*, departments.name AS department_name
+    FROM employees
+    JOIN departments ON employees.department_id = departments.id
+    WHERE employees.id = ?`,
     [employeeId]
   )
   if (!data) return null
@@ -58,7 +66,7 @@ export const insertEmployee = async (
   )
 
   // validate result
-  if (!isOkInsertSingle(result))
+  if (!isOkSingleInsert(result))
     throw `Insert failed: ${JSON.stringify(result)}`
 
   return (await getEmployeeById(result.insertId)) as Employee
@@ -95,7 +103,7 @@ export const updateEmployeeDetails = async (
   )
 
   // validate result
-  if (!isOkUpdateSingle(result))
+  if (!isOkSingleUpdate(result))
     throw `Update failed: ${JSON.stringify(result)}`
 
   return (await getEmployeeById(details.id)) as Employee
@@ -114,7 +122,7 @@ export const deleteEmployee = async (
   ])
 
   // validate result
-  if (!isOkDeleteSingle(result))
+  if (!isOkSingleDelete(result))
     throw `Delete failed: ${JSON.stringify(result)}`
 
   return employee

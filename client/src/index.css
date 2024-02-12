@@ -6,7 +6,45 @@ body {
   @apply bg-gray-900 text-gray-200;
 }
 
-button,
 .btn {
-  @apply pointer-events-auto rounded-md bg-primary px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-primary-light;
+  @apply pointer-events-auto rounded-md px-3 py-2 text-[0.8125rem] font-semibold leading-5;
+}
+
+.btn-primary {
+  @apply pointer-events-auto rounded-md bg-primary px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-primary-light border border-primary;
+}
+
+.btn-secondary {
+  @apply bg-transparent text-secondary border border-secondary hover:bg-gray-700;
+}
+
+.btn-tertiary {
+  @apply bg-transparent text-gray-300 border border-gray-400 hover:bg-gray-700;
+}
+
+.btn-danger {
+  @apply bg-transparent text-red-400 border border-red-400 hover:bg-gray-700;
+}
+
+.btn-danger-filled {
+  @apply bg-red-500 text-white border border-red-500 hover:bg-red-400;
+}
+
+.btn.disabled {
+  @apply pointer-events-none cursor-not-allowed opacity-70;
+}
+
+table {
+  @apply rounded-md;
+
+  border-spacing: 0;
+}
+
+table tr:nth-of-type(even) {
+  @apply bg-gray-800;
+}
+
+input,
+select {
+  @apply text-gray-200 bg-gray-700 outline-0 rounded-md px-3 py-2 focus:outline focus:outline-1 focus:outline-primary;
 }

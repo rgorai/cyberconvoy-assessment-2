@@ -10,7 +10,7 @@ export const ensureAuthenticated = async (
 ) => {
   // ok for this app only since there are no user-specific resources,
   // so there is no real need for session in development
-  if (NODE_ENV === 'development') return next()
+  if (NODE_ENV === 'development-api') return next()
 
   const { user, tokens } = req.session
   try {

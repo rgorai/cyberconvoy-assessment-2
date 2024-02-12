@@ -13,3 +13,16 @@ type AppFeatures = {
   element: JSX.Element
   ensureAuthenticated: boolean | null
 }[]
+
+/**
+ * @author rgorai
+ * @description details of a web error
+ * @param status http status code
+ * @param statusText text describing the status code
+ * @param data any associated error data
+ */
+type ServerError = {
+  status: number
+  statusText: string
+  data?: string
+}

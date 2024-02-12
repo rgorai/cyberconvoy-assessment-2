@@ -1,34 +1,50 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Fragment } from 'react'
-import { AuthProvider } from './services/authContext'
-import AuthWrapper from './components/AuthWrapper'
+import AuthWrapper from './components/wrappers/AuthWrapper'
 import NavBar from './components/NavBar'
-import DocumentTitleWrapper from './components/DocumentTitleWrapper'
+import DocumentTitleWrapper from './components/wrappers/DocumentTitleWrapper'
+import HomePage from './pages/HomePage'
+import Footer from './components/Footer'
+import EmployeesPage from './pages/EmployeesPage'
+import ErrorPage from './pages/ErrorPage'
+import HTTP_CODES from './constants/httpCodes'
+import EmployeeForm from './components/EmployeeForm'
+import EmployeeDetailsPage from './pages/EmployeeDetailsPage'
+import PrefetchDepartments from './services/PrefetchDepartments'
+import AllContextProviders from './context'
 
 const APP_FEATURES: AppFeatures = [
   {
     label: 'Welcome',
     path: '/',
-    element: <>home page</>,
+    element: <HomePage />,
     ensureAuthenticated: false,
   },
   {
     label: 'All Employees',
     path: '/employees',
-    element: <>employees page</>,
+    element: <EmployeesPage />,
+    ensureAuthenticated: true,
+  },
+  {
+    label: 'Create Employee',
+    path: '/employees/create',
+    element: <EmployeeForm />,
     ensureAuthenticated: true,
   },
   {
     label: 'Employee Details',
     path: '/employees/:empId',
-    element: <>employee details page</>,
+    element: <EmployeeDetailsPage />,
     ensureAuthenticated: true,
   },
 ]
 
 function App() {
   return (
-    <AuthProvider>
+    <AllContextProviders>
+      <PrefetchDepartments />
+
       <BrowserRouter>
         <NavBar />
 
@@ -63,10 +79,14 @@ function App() {
                 </Fragment>
               )
             })}
+
+            <Route path="*" element={<ErrorPage {...HTTP_CODES[404]} />} />
           </Routes>
         </main>
+
+        <Footer />
       </BrowserRouter>
-    </AuthProvider>
+    </AllContextProviders>
   )
 }
 
