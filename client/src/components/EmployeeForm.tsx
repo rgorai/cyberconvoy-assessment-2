@@ -88,7 +88,7 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
       type: 'number',
       placeholder: '100000',
       validation: (salary) => areValidNumbers({ salary }, { min: 0 }),
-      invalidValueMessage: 'Please enter a salary greater than 0.',
+      invalidValueMessage: 'Please enter a salary of at least 0.',
       required: true,
     },
   }
