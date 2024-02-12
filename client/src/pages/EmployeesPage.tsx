@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useQueryState } from 'react-router-use-location-state'
 import { fetchAllEmployees } from '../services/apiService'
 import PageLoader from '../components/wrappers/PageLoader'
 import HTTP_CODES from '../constants/httpCodes'
 import EditIcon from '../components/icons/EditIcon'
 import { useEmployeesData } from '../context/employeesContext'
+import DepartmentsFilter from '../components/DepartmentsFilter'
 
 const EMPLOYEE_HEADERS = [
   'Full Name',
@@ -15,6 +17,7 @@ const EMPLOYEE_HEADERS = [
 ]
 
 const EmployeesPage = () => {
+  const [currDepartmentFilter] = useQueryState('department', -1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ServerError | null>(null)
   const { allEmployees, setAllEmployees } = useEmployeesData()
@@ -43,25 +46,35 @@ const EmployeesPage = () => {
 
   return (
     <PageLoader loading={loading} error={error} pageData={allEmployees}>
-      {(employees) => (
-        <div className="p-16 pb-24 max-w-[85rem] mx-auto">
-          <div className="flex flex-row justify-between">
-            <h1 className="text-4xl">Employees</h1>
+      {(employees) => {
+        const filteredEmployees = employees.filter((employee) =>
+          currDepartmentFilter > -1
+            ? employee.department.id === currDepartmentFilter
+            : true
+        )
 
-            <div>
-              <button className="btn btn-tertiary mr-5">Download as CSV</button>
+        return (
+          <div className="p-16 pb-24 max-w-[85rem] mx-auto">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row items-center gap-5">
+                <h1 className="text-4xl">Employees</h1>
 
-              <Link
-                className="btn btn-secondary inline-block"
-                to="/employees/create"
-              >
-                Add Employee
-              </Link>
+                <DepartmentsFilter />
+              </div>
+
+              <div className="flex flex-row items-center gap-5">
+                <button className="btn btn-tertiary">Download as CSV</button>
+
+                <Link
+                  className="btn btn-secondary inline-block"
+                  to="/employees/create"
+                >
+                  Add Employee
+                </Link>
+              </div>
             </div>
-          </div>
 
-          {employees.length > 0 ? (
-            <table className="w-full mt-12 border border-primary border-separate overflow-hidden">
+            <table className="w-full max-w-full mt-12 border border-primary border-separate overflow-hidden">
               <thead>
                 <tr className="bg-primary">
                   {EMPLOYEE_HEADERS.map((header) => (
@@ -74,51 +87,59 @@ const EmployeesPage = () => {
               </thead>
 
               <tbody>
-                {employees.map((employee) => (
-                  <tr key={employee.id}>
-                    <td className={bodyCellSpacing.join(' ')}>
-                      {employee.fullName}
-                    </td>
-                    {[
-                      employee.dateOfBirth.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }),
-                      employee.department.name,
-                      employee.title,
-                      `$${employee.salary.toLocaleString()}`,
-                    ].map((e) => (
-                      <td
-                        className={`${bodyCellSpacing.join(' ')} text-gray-400`}
-                        key={e}
-                      >
-                        {e}
+                {filteredEmployees.length > 0 ? (
+                  filteredEmployees.map((employee) => (
+                    <tr key={employee.id}>
+                      <td className={bodyCellSpacing.join(' ')}>
+                        {employee.fullName}
                       </td>
-                    ))}
 
-                    <td
-                      className={`${bodyCellSpacing[1]} flex flex-row items-center gap-2`}
-                    >
-                      <Link
-                        className="btn btn-tertiary inline-block !px-2"
-                        to={`/employees/${employee.id}`}
-                        title={`Edit ${employee.fullName}`}
+                      {[
+                        employee.dateOfBirth.toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        }),
+                        employee.department.name,
+                        employee.title,
+                        `$${employee.salary.toLocaleString()}`,
+                      ].map((e) => (
+                        <td
+                          className={`${bodyCellSpacing.join(' ')} text-gray-400`}
+                          key={e}
+                        >
+                          {e}
+                        </td>
+                      ))}
+
+                      <td
+                        className={`${bodyCellSpacing[1]} flex flex-row items-center gap-2`}
                       >
-                        <EditIcon />
-                      </Link>
+                        <Link
+                          className="btn btn-tertiary inline-block !px-2 mr-1"
+                          to={`/employees/${employee.id}`}
+                          title={`Edit ${employee.fullName}`}
+                        >
+                          <EditIcon />
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      className="mt-12 italic text-center p-5"
+                      colSpan={EMPLOYEE_HEADERS.length + 1}
+                    >
+                      No employees.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-          ) : (
-            <div className="mt-12 italic">
-              There are currently no employees.
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )
+      }}
     </PageLoader>
   )
 }
