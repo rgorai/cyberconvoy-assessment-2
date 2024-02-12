@@ -211,10 +211,12 @@ const EmployeeForm = ({ employeeDetails }: Props) => {
     <div className={cx({ 'p-16': !employeeDetails })}>
       {employeeDetails ? (
         <div className="flex flex-row justify-between">
-          <h1 className="text-3xl">{`${employeeDetails.fullName}'s Details`}</h1>
+          <h1 className="text-3xl max-w-2xl truncate">
+            {`Details for ${employeeDetails.fullName}`}
+          </h1>
           <div>
             <button
-              className="btn btn-danger"
+              className="btn btn-danger max-w-xs truncate"
               onClick={() =>
                 showConfirmDelete
                   ? onDeleteConfirm()

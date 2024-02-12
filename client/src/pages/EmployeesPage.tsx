@@ -1,26 +1,33 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQueryState } from 'react-router-use-location-state'
+import cx from 'classnames'
 import { fetchAllEmployees } from '../services/apiService'
 import PageLoader from '../components/wrappers/PageLoader'
 import HTTP_CODES from '../constants/httpCodes'
 import EditIcon from '../components/icons/EditIcon'
 import { useEmployeesData } from '../context/employeesContext'
 import DepartmentsFilter from '../components/DepartmentsFilter'
-
-const EMPLOYEE_HEADERS = [
-  'Full Name',
-  'Date of Birth',
-  'Department',
-  'Job Title',
-  'Salary',
-]
+import { useDepartmentsData } from '../context/departmentsContext'
 
 const EmployeesPage = () => {
   const [currDepartmentFilter] = useQueryState('department', -1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ServerError | null>(null)
   const { allEmployees, setAllEmployees } = useEmployeesData()
+  const { departments } = useDepartmentsData()
+
+  const EMPLOYEE_HEADERS = [
+    'Full Name',
+    'Date of Birth',
+    `Department${
+      currDepartmentFilter > -1
+        ? ` (${departments.find((department) => department.id === currDepartmentFilter)?.name})`
+        : ''
+    }`,
+    'Job Title',
+    'Salary',
+  ]
 
   const getAllEmployees = useCallback(() => {
     setLoading(true)
@@ -42,19 +49,20 @@ const EmployeesPage = () => {
     if (!allEmployees) getAllEmployees()
   }, [allEmployees, getAllEmployees])
 
-  const bodyCellSpacing = ['px-5', 'py-4']
+  const bodyCellStyles = 'px-5 py-4 max-w-xs truncate'
 
   return (
     <PageLoader loading={loading} error={error} pageData={allEmployees}>
       {(employees) => {
-        const filteredEmployees = employees.filter((employee) =>
+        const filteredEmployees =
           currDepartmentFilter > -1
-            ? employee.department.id === currDepartmentFilter
-            : true
-        )
+            ? employees.filter(
+                (employee) => employee.department.id === currDepartmentFilter
+              )
+            : employees
 
         return (
-          <div className="p-16 pb-24 max-w-[85rem] mx-auto">
+          <div className="p-16 pb-24 max-w-[90rem] mx-auto">
             <div className="flex flex-row justify-between">
               <div className="flex flex-row items-center gap-5">
                 <h1 className="text-4xl">Employees</h1>
@@ -74,69 +82,72 @@ const EmployeesPage = () => {
               </div>
             </div>
 
-            <table className="w-full max-w-full mt-12 border border-primary border-separate overflow-hidden">
-              <thead>
-                <tr className="bg-primary">
-                  {EMPLOYEE_HEADERS.map((header) => (
-                    <th className="text-left py-3 px-5" key={header}>
-                      {header}
-                    </th>
-                  ))}
-                  <th />
-                </tr>
-              </thead>
+            <div className="overflow-x-auto">
+              <table className="table-auto w-full max-w-full mt-12 border border-primary border-separate overflow-hidden">
+                <thead>
+                  <tr className="bg-primary">
+                    {EMPLOYEE_HEADERS.map((header) => (
+                      <th className="text-left py-3 px-5" key={header}>
+                        {header}
+                      </th>
+                    ))}
+                    <th />
+                  </tr>
+                </thead>
 
-              <tbody>
-                {filteredEmployees.length > 0 ? (
-                  filteredEmployees.map((employee) => (
-                    <tr key={employee.id}>
-                      <td className={bodyCellSpacing.join(' ')}>
-                        {employee.fullName}
-                      </td>
+                <tbody>
+                  {filteredEmployees.length > 0 ? (
+                    filteredEmployees.map((employee) => (
+                      <tr key={employee.id}>
+                        <td className={bodyCellStyles}>{employee.fullName}</td>
 
-                      {[
-                        employee.dateOfBirth.toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                        }),
-                        employee.department.name,
-                        employee.title,
-                        `$${employee.salary.toLocaleString()}`,
-                      ].map((e) => (
+                        {[
+                          employee.dateOfBirth.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                          }),
+                          employee.department.name,
+                          employee.title,
+                          `$${employee.salary.toLocaleString()}`,
+                        ].map((e) => (
+                          <td
+                            className={cx('text-gray-400', bodyCellStyles)}
+                            key={e}
+                          >
+                            {e}
+                          </td>
+                        ))}
+
                         <td
-                          className={`${bodyCellSpacing.join(' ')} text-gray-400`}
-                          key={e}
+                          className={cx(
+                            'flex flex-row items-center gap-2',
+                            bodyCellStyles
+                          )}
                         >
-                          {e}
+                          <Link
+                            className="btn btn-tertiary inline-block !px-2 mr-1"
+                            to={`/employees/${employee.id}`}
+                            title={`Edit ${employee.fullName}`}
+                          >
+                            <EditIcon />
+                          </Link>
                         </td>
-                      ))}
-
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
                       <td
-                        className={`${bodyCellSpacing[1]} flex flex-row items-center gap-2`}
+                        className="mt-12 italic text-center p-5"
+                        colSpan={EMPLOYEE_HEADERS.length + 1}
                       >
-                        <Link
-                          className="btn btn-tertiary inline-block !px-2 mr-1"
-                          to={`/employees/${employee.id}`}
-                          title={`Edit ${employee.fullName}`}
-                        >
-                          <EditIcon />
-                        </Link>
+                        No employees.
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      className="mt-12 italic text-center p-5"
-                      colSpan={EMPLOYEE_HEADERS.length + 1}
-                    >
-                      No employees.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )
       }}
