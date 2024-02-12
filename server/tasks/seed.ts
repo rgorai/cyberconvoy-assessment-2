@@ -1,6 +1,6 @@
 import mysql from 'mysql2'
 import {
-  MYSQL_DATABASE,
+  MYSQL_DATABASE_NAME,
   MYSQL_HOST,
   MYSQL_PASSWORD,
   MYSQL_USER,
@@ -19,12 +19,12 @@ const db = mysql
 const seedDb = async () => {
   // drop db before seeding
   console.log('Dropping db if it exists...')
-  await db.query(`DROP DATABASE IF EXISTS ${MYSQL_DATABASE}`)
+  await db.query(`DROP DATABASE IF EXISTS ${MYSQL_DATABASE_NAME}`)
 
   // create db
   console.log('Creating db...')
-  await db.query(`CREATE DATABASE ${MYSQL_DATABASE}`)
-  await db.query(`USE ${MYSQL_DATABASE}`)
+  await db.query(`CREATE DATABASE ${MYSQL_DATABASE_NAME}`)
+  await db.query(`USE ${MYSQL_DATABASE_NAME}`)
 
   // DEPARTMENTS
   console.log('Creating departments table...')
