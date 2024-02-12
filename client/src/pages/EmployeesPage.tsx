@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQueryState } from 'react-router-use-location-state'
 import cx from 'classnames'
+import { download, generateCsv, mkConfig } from 'export-to-csv'
 import { fetchAllEmployees } from '../services/apiService'
 import PageLoader from '../components/wrappers/PageLoader'
 import HTTP_CODES from '../constants/httpCodes'
@@ -9,6 +10,7 @@ import EditIcon from '../components/icons/EditIcon'
 import { useEmployeesData } from '../context/employeesContext'
 import DepartmentsFilter from '../components/DepartmentsFilter'
 import { useDepartmentsData } from '../context/departmentsContext'
+import { getISODate } from '../utils/strings'
 
 const EmployeesPage = () => {
   const [currDepartmentFilter] = useQueryState('department', -1)
@@ -17,16 +19,38 @@ const EmployeesPage = () => {
   const { allEmployees, setAllEmployees } = useEmployeesData()
   const { departments } = useDepartmentsData()
 
-  const EMPLOYEE_HEADERS = [
-    'Full Name',
-    'Date of Birth',
-    `Department${
-      currDepartmentFilter > -1
-        ? ` (${departments.find((department) => department.id === currDepartmentFilter)?.name})`
-        : ''
-    }`,
-    'Job Title',
-    'Salary',
+  const currDepartmentFilterName =
+    currDepartmentFilter > -1
+      ? departments.find((department) => department.id === currDepartmentFilter)
+          ?.name
+      : null
+
+  const EMPLOYEE_HEADERS: {
+    key: keyof Employee
+    displayLabel: string
+  }[] = [
+    {
+      key: 'fullName',
+      displayLabel: 'Full Name',
+    },
+    {
+      key: 'dateOfBirth',
+      displayLabel: 'Date of Birth',
+    },
+    {
+      key: 'department',
+      displayLabel: `Department${
+        currDepartmentFilterName ? ` (${currDepartmentFilterName})` : ''
+      }`,
+    },
+    {
+      key: 'title',
+      displayLabel: 'Job Title',
+    },
+    {
+      key: 'salary',
+      displayLabel: 'Salary',
+    },
   ]
 
   const getAllEmployees = useCallback(() => {
@@ -49,6 +73,15 @@ const EmployeesPage = () => {
     if (!allEmployees) getAllEmployees()
   }, [allEmployees, getAllEmployees])
 
+  const csvConfig = mkConfig({
+    filename: `Employees_Data${
+      currDepartmentFilterName
+        ? `-${currDepartmentFilterName}_Department-`
+        : '_'
+    }${new Date().toISOString()}`,
+    columnHeaders: EMPLOYEE_HEADERS,
+  })
+
   const bodyCellStyles = 'px-5 py-4 max-w-xs truncate'
 
   return (
@@ -61,6 +94,17 @@ const EmployeesPage = () => {
               )
             : employees
 
+        const onCsvClick = () => {
+          const csv = generateCsv(csvConfig)(
+            filteredEmployees.map((employee) => ({
+              ...employee,
+              department: employee.department.name,
+              dateOfBirth: getISODate(employee.dateOfBirth),
+            }))
+          )
+          download(csvConfig)(csv)
+        }
+
         return (
           <div className="p-16 pb-24 max-w-[90rem] mx-auto">
             <div className="flex flex-row justify-between">
@@ -71,7 +115,9 @@ const EmployeesPage = () => {
               </div>
 
               <div className="flex flex-row items-center gap-5">
-                <button className="btn btn-tertiary">Download as CSV</button>
+                <button className="btn btn-tertiary" onClick={onCsvClick}>
+                  Download as CSV
+                </button>
 
                 <Link
                   className="btn btn-secondary inline-block"
@@ -87,8 +133,8 @@ const EmployeesPage = () => {
                 <thead>
                   <tr className="bg-primary">
                     {EMPLOYEE_HEADERS.map((header) => (
-                      <th className="text-left py-3 px-5" key={header}>
-                        {header}
+                      <th className="text-left py-3 px-5" key={header.key}>
+                        {header.displayLabel}
                       </th>
                     ))}
                     <th />
